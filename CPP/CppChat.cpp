@@ -15,6 +15,10 @@
 #include <chrono>
 using namespace std;
 
+#define DESKTOP_PORT "51878"
+#define LAPTOP_PORT "51824"
+#define MY_IP "69.207.198.85"
+
 bool UDPContinue = true;
 bool TCPContinue = true;
 
@@ -30,8 +34,8 @@ void outputUDP(){
 	hints.ai_flags = AI_PASSIVE;
 
 
-	//status = getaddrinfo(NULL, "51878", &hints, &servinfo); //desk
-	status = getaddrinfo(NULL, "51824", &hints, &servinfo); //laptop
+	//status = getaddrinfo(NULL, DESKTOP_PORT, &hints, &servinfo); //desk
+	status = getaddrinfo(NULL, LAPTOP_PORT, &hints, &servinfo); //laptop
 	if (status != 0){
 		cout << "error with get addrinfo";
 		return;
@@ -118,7 +122,7 @@ void inputTCP(){
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	getaddrinfo("69.207.198.85", "51878", &hints, &res);
+	getaddrinfo(MY_IP, DESKTOP_PORT, &hints, &res);
 	
 	sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
