@@ -16,6 +16,7 @@
 using namespace std;
 
 bool UDPContinue = true;
+bool TCPContinue = true;
 
 void outputUDP(){
 	int status;
@@ -77,6 +78,13 @@ void outputUDP(){
 			//cout << "data recived\n";
 			printf("%s",buff);
 			cout << endl;
+			string killString = buff;
+			if(killString == "bye"){
+				UDPContinue = false;
+				TCPContinue = false;
+				cout << "Python logged out, type 'bye' or ctrl-C\n";
+			}
+			memset(&buff, 0, sizeof buff);
 		}
 		/*
 		const char *dataToLap = "helsdflo is this lappy?";
@@ -103,8 +111,39 @@ void outputUDP(){
 void inputTCP(){
 	//connect to the py tcp server
 	//when the connection goes down, close up shop and exit loop
+	struct addrinfo hints, *res;
+	int sockfd;
 
-	this_thread::sleep_for(chrono::seconds(30));
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	getaddrinfo("69.207.198.85", "51878", &hints, &res);
+	
+	sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+	int connRet = -1;
+	while (connRet == -1){
+		connRet = connect(sockfd, res->ai_addr, res->ai_addrlen);
+		sleep(1);
+	}
+	cout << "TCP Connected\n";
+
+	int len, bytes_sent;
+	string outp;
+	while (TCPContinue){
+		//cin >> outp;
+		getline(cin, outp);
+		//cout << outp << " and: " << outp.c_str() << endl;
+		len = strlen(outp.c_str());
+		bytes_sent = send(sockfd, outp.c_str(), len, 0);
+		if (outp == "bye" or outp == "bye "){
+			TCPContinue = false;
+			UDPContinue = false;
+		}
+	}
+
+	//this_thread::sleep_for(chrono::seconds(30));
 }
 
 
